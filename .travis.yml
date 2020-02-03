@@ -53,7 +53,7 @@ install:
 
 # Instalar face_recognition
 
-  - sudo pip2 face_recognition
+  - sudo pip2 install face_recognition
 
 # Tareas a ejecutar antes de nuestra prueba
 
