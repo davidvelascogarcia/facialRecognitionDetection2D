@@ -5,7 +5,7 @@
 - [Introduction](#introduction)
 - [Trained Models](#trained-models)
 - [Requirements](#requirements)
-- [Additional Info](#additional-info)
+- [Status](#status)
 - [Related projects](#related-projects)
 
 
