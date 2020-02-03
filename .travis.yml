@@ -1,0 +1,77 @@
+# Integración continua Travis CI
+
+# Lenguaje de programación
+
+language: python
+
+# Sistema operativo destino a probar
+
+os: linux
+
+# Distribución del sistema operativo
+
+dist: trusty
+
+# Requerimiento de permisos en Linux
+
+sudo: enabled
+
+# Compiladores a emplear
+
+compiler: 
+#  - gcc
+   - clang
+
+# Tareas a realizar antes de instalacción
+
+before_install:
+
+# Actualizar
+
+  - sudo apt-get -qq update
+
+# Configurar Git si no lo está
+
+  - if [ ! `git config --get user.email` ]; then `git config --global user.email 'user@example.com'`; fi
+  - if [ ! `git config --get user.name` ]; then `git config --global user.name 'Travis CI'`; fi
+
+# En caso de requerir instalar algo para la prueba
+
+install:
+
+# Instalar YARP
+
+  - sudo sh -c 'echo "deb http://www.icub.org/ubuntu trusty contrib/science" > /etc/apt/sources.list.d/icub.list'
+  - sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 57A5ACB6110576A6
+  - sudo apt-get update
+  - sudo apt-get install yarp
+
+# Instalar OpenCV
+
+  - sudo apt-get install libopencv-dev
+
+
+# Instalar face_recognition
+
+  - sudo pip2 face_recognition
+
+# Tareas a ejecutar antes de nuestra prueba
+
+before_script:
+  - cd programs
+
+
+# Compilamos
+
+script:
+
+
+# En caso de compilación exitosa
+
+after_success:
+
+
+# Notificaciones por correo
+
+notifications:
+email: true
