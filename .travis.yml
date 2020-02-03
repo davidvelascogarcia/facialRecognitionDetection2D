@@ -2,7 +2,7 @@
 
 # Lenguaje de programación
 
-language: python
+language: python 2.7
 
 # Sistema operativo destino a probar
 
