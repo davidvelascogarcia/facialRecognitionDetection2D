@@ -58,18 +58,24 @@ install:
 # Tareas a ejecutar antes de nuestra prueba
 
 before_script:
-  - cd programs
-
+  - mkdir database
+  - mkdir resources
+  - cd scripts
 
 # Compilamos
 
 script:
-
+  - bash updatePeopleFiles.sh
+  - python updatePeopleData.py
 
 # En caso de compilación exitosa
 
 after_success:
 
+  - cd ..
+  - cd resources
+  - rm peopleData.txt
+  - rm peopleFiles.txt
 
 # Notificaciones por correo
 
