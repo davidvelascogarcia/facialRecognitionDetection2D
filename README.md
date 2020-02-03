@@ -1,6 +1,6 @@
 [![facialRecognitionDetection2D Homepage](https://img.shields.io/badge/facialRecognitionDetection2D-develop-orange.svg)](https://github.com/davidvelascogarcia/facialRecognitionDetection2D/tree/develop/docs) [![Latest Release](https://img.shields.io/github/tag/davidvelascogarcia/facialRecognitionDetection2D.svg?label=Latest%20Release)](https://github.com/davidvelascogarcia/facialRecognitionDetection2D/tags) [![Build Status](https://travis-ci.org/davidvelascogarcia/facialRecognitionDetection2D.svg?branch=develop)](https://travis-ci.org/davidvelascogarcia/facialRecognitionDetection2D)
 
-# Facial Recognition: Detector 2D (PYTHON API)
+# Facial Recognition: Detector 2D (Python API)
 
 - [Introduction](#introduction)
 - [Trained Models](#trained-models)
@@ -11,7 +11,7 @@
 
 ## Introduction
 
-`facialRecognitionDetection2D` module use `dlib` PYTHON API. The module detects faces using pre-trained models and adds facial recognition doing a facial training with user images. Also use `YARP` to send video source pre and post-procesed. Also admits `YARP` source video like input. Some [scripts](./scripts) added to create automated files of user data file images and user label name file. This module also publish detection results in `YARP` port.
+`facialRecognitionDetection2D` module use `dlib` `python` API. The module detects faces using pre-trained models and adds facial recognition doing a facial training with user images. Also use `YARP` to send video source pre and post-procesed. Also admits `YARP` source video like input. Some [scripts](./scripts) added to create automated files of user data file images and user label name file. This module also publish detection results in `YARP` port.
 
 
 ## Trained Models
@@ -38,8 +38,8 @@ yarp connect /videoSource /facialRecognitionDetection2D/img:i
 
 NOTE:
 
-Video results are published on `/facialRecognitionDetection2D/img:o`
-Data results are published on `/facialRecognitionDetection2D/data:o`
+- Video results are published on `/facialRecognitionDetection2D/img:o`
+- Data results are published on `/facialRecognitionDetection2D/data:o`
 
 ## Requirements
 
@@ -64,5 +64,5 @@ Tested on: `ubuntu 14.04`, `ubuntu 16.04`, `ubuntu 18.04` and `lubuntu 18.04`.
 
 ## Related projects
 
-* [ageitgey: face_recognition project](https://github.com/ageitgey/face_recognition)[
+* [ageitgey: face_recognition project](https://github.com/ageitgey/face_recognition)
 * [davidvelascogarcia: Tensorflow: Detector 2D (C++ API)](https://github.com/davidvelascogarcia/tensorflowDetection2D)
