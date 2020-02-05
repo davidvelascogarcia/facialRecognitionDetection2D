@@ -17,6 +17,7 @@
   * |--------------------------------------|---------------------------------------------------------|
   * | /facialRecognitionDetection2D/img:o  | Output image with facial detection                      |
   * | /facialRecognitionDetection2D/data:o | Output result, facial recognition data                  |
+  * | /facialRecognitionDetection2D/coord:o| Output result, facial recognition coordinates           |
   *
 '''
 
@@ -71,8 +72,19 @@ faceRecognitionDetection2D_portOutDet = yarp.Port()
 faceRecognitionDetection2D_portNameOutDet = '/facialRecognitionDetection2D/data:o'
 faceRecognitionDetection2D_portOutDet.open(faceRecognitionDetection2D_portNameOutDet)
 
+print("")
+print("Opening data output port with name /facialRecognitionDetection2D/coord:o...")
+
+# Open output coordinates data port
+faceRecognitionDetection2D_portOutCoord = yarp.Port()
+faceRecognitionDetection2D_portNameOutCoord = '/facialRecognitionDetection2D/coord:o'
+faceRecognitionDetection2D_portOutCoord.open(faceRecognitionDetection2D_portNameOutCoord)
+
 # Create data bootle
 cmd=yarp.Bottle()
+
+# Create coordinates bootle
+coordinates=yarp.Bottle()
 
 # Image size
 image_w = 640
@@ -194,12 +206,16 @@ while True:
         if matches[best_match_index]:
             name = known_face_names[best_match_index]
         else:
-            name = "Unknown"    
+            name = "Unknown"
         # Paint processed image
         cv2.rectangle(in_buf_array, (left, top), (right, bottom), (0, 0, 255), 2)
         cv2.rectangle(in_buf_array, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
         font = cv2.FONT_HERSHEY_DUPLEX
         cv2.putText(in_buf_array, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
+
+        # Get people coordinates
+        x=left
+        y=480-bottom
 
 
     #cv2.imshow('Video', in_buf_array)
@@ -212,6 +228,10 @@ while True:
     print ("\n")
     print ('Detection:')
     print (name)
+    print ("\n")
+    print ("Coordinates:")
+    print ("X: ", x)
+    print ("Y: ", y)
 
     # Sending processed image
     print ('Sending processed image...')
@@ -219,13 +239,24 @@ while True:
     faceRecognitionDetection2D_portOut.write(out_buf_image)
 
     # Sending processed detection
+    print ('Sending people detected...')
     cmd.clear()
     cmd.addString("Detection:")
     cmd.addString(name)
     faceRecognitionDetection2D_portOutDet.write(cmd)
 
+    # Sending coordinates detection
+    print ('Sending coordinates...')
+    coordinates.clear()
+    coordinates.addString("X: ")
+    coordinates.addString(str(x))
+    coordinates.addString("Y: ")
+    coordinates.addString(str(y))
+    faceRecognitionDetection2D_portOutCoord.write(coordinates)
+
 print 'Closing ports...'
 faceRecognitionDetection2D_portIn.close()
 faceRecognitionDetection2D_portOut.close()
 faceRecognitionDetection2D_portOutDet.close()
+faceRecognitionDetection2D_portOutCoord.close()
 #cv2.destroyAllWindows()
