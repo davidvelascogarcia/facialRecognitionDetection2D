@@ -49,11 +49,18 @@ NOTE:
 * [Install YARP 2.3.XX+](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-yarp.md)
 * [Install pip](https://github.com/roboticslab-uc3m/installation-guides/blob/master/install-pip.md)
 * Install face_recognition:
+
+(Using OpenCV and YARP with Python 2.7 bindings)
 ```bash
 pip2 install face_recognition
 ```
 
-Tested on: `ubuntu 14.04`, `ubuntu 16.04`, `ubuntu 18.04` and `lubuntu 18.04`.
+(Using OpenCV and YARP with Python 3 bindings)
+```bash
+pip3 install face_recognition
+```
+
+Tested on: `ubuntu 14.04`, `ubuntu 16.04`, `ubuntu 18.04`, `lubuntu 18.04` and `raspbian`.
 
 
 ## Status
