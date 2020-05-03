@@ -11,6 +11,15 @@
 import os, sys, string
 import numpy as np
 
+
+print("")
+print("")
+print("**************************************************************************")
+print("Processing")
+print("**************************************************************************")
+print("")
+print("Preparing files ...")
+
 peopleFile = open("../resources/peopleFiles.txt", "rt")
 peopleFileUpdated = open("../resources/peopleData.txt", "wt")
 
@@ -30,4 +39,9 @@ for line in peopleFile:
 peopleFile.close()
 peopleFileUpdated.close()
 
+print("")
+print("")
+print("**************************************************************************")
+print("Program finished")
+print("**************************************************************************")
 

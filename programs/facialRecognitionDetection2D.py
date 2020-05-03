@@ -42,6 +42,13 @@ print("Starting system...")
 print("")
 print("Loading facialRecognitionDetection2D module...")
 
+
+print("")
+print("")
+print("**************************************************************************")
+print("YARP configuration:")
+print("**************************************************************************")
+print("")
 print("")
 print("Initializing YARP network...")
 
@@ -110,6 +117,12 @@ peopleFileLines = peopleFile.readlines()
 countFiles = 0
 peopleFiles = []
 
+
+print("")
+print("")
+print("**************************************************************************")
+print("Reading files database:")
+print("**************************************************************************")
 print("")
 print("Reading people files database...")
 print("")
@@ -129,6 +142,12 @@ peopleDataFileLines = peopleDataFile.readlines()
 countDataFiles = 0
 peopleDataFiles = []
 
+
+print("")
+print("")
+print("**************************************************************************")
+print("Reading database:")
+print("**************************************************************************")
 print("")
 print("Reading people name database...")
 print("")
@@ -141,6 +160,11 @@ for peopleDataFileLine in peopleDataFileLines:
 
 print(peopleDataFiles)
 
+print("")
+print("")
+print("**************************************************************************")
+print("Training models:")
+print("**************************************************************************")
 print("")
 print("Training people database...")
 print("")
@@ -177,6 +201,12 @@ print ('Waiting input image source...')
 print("")
 
 
+print("")
+print("")
+print("**************************************************************************")
+print("Processing:")
+print("**************************************************************************")
+print("")
 
 # Loop process
 while True:
@@ -220,11 +250,6 @@ while True:
         x=left
         y=480-bottom
 
-        #cv2.imshow('Video', in_buf_array)
-
-        #if cv2.waitKey(1) & 0xFF == ord('q'):
-        #break
-
         # Print processed data
         print ("\n")
         print ('Detection:')
@@ -258,4 +283,10 @@ faceRecognitionDetection2D_portIn.close()
 faceRecognitionDetection2D_portOut.close()
 faceRecognitionDetection2D_portOutDet.close()
 faceRecognitionDetection2D_portOutCoord.close()
-#cv2.destroyAllWindows()
+
+
+print("")
+print("")
+print("**************************************************************************")
+print("Program finished")
+print("**************************************************************************")
