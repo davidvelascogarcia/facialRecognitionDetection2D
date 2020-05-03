@@ -8,17 +8,28 @@
 '''
 
 # Libraries
-import os, sys, string
+import os
 import numpy as np
+import string
+import sys
+
+
 
 
 print("")
 print("")
 print("**************************************************************************")
-print("Processing")
+print("updatePeopleData")
 print("**************************************************************************")
 print("")
-print("Preparing files ...")
+print("Preparing people labels ...")
+print("Updating preople labels ...")
+print("")
+print("")
+print("**************************************************************************")
+print("Processing:")
+print("**************************************************************************")
+print("")
 
 peopleFile = open("../resources/peopleFiles.txt", "rt")
 peopleFileUpdated = open("../resources/peopleData.txt", "wt")
@@ -38,6 +49,9 @@ for line in peopleFile:
 	
 peopleFile.close()
 peopleFileUpdated.close()
+
+print("")
+print("People labels updated correctly")
 
 print("")
 print("")

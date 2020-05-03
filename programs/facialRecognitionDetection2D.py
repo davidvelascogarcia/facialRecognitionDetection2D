@@ -23,10 +23,12 @@
 '''
 
 # Libraries
-import face_recognition
 import cv2
-import yarp
+import datetime
+import face_recognition
 import numpy as np
+import yarp
+
 
 print("**************************************************************************")
 print("**************************************************************************")
@@ -207,6 +209,7 @@ print("*************************************************************************
 print("Processing:")
 print("**************************************************************************")
 print("")
+print("Processing data ...")
 
 # Loop process
 while True:
@@ -237,7 +240,7 @@ while True:
 
         if matches[best_match_index]:
            name = known_face_names[best_match_index]
-        else:  
+        else:
            name = "Unknown"
 
         # Paint processed image
@@ -250,19 +253,27 @@ while True:
         x=left
         y=480-bottom
 
+        # Get time Detection
+        timeDetection = datetime.datetime.now()
+
         # Print processed data
+        print("")
+        print("**************************************************************************")
+        print("Resume:")
+        print("**************************************************************************")
         print ("\n")
-        print ('Detection:')
-        print (name)
-        print("\n")
+        print ("Detection: "+ str(name))
         print("Coordinates:")
         print("X: ", x)
         print("Y: ", y)
+        print("Detection time: "+ str(timeDetection))
 
         # Sending processed detection
         cmd.clear()
         cmd.addString("Detection:")
         cmd.addString(name)
+        cmd.addString("Time:")
+        cmd.addString(str(timeDetection))
         faceRecognitionDetection2D_portOutDet.write(cmd)
 
         # Sending coordinates detection
@@ -274,7 +285,9 @@ while True:
         faceRecognitionDetection2D_portOutCoord.write(coordinates)
 
         # Sending processed image
+    print("")
     print ('Sending processed image...')
+    print("")
     out_buf_array[:,:] = in_buf_array
     faceRecognitionDetection2D_portOut.write(out_buf_image)
 
