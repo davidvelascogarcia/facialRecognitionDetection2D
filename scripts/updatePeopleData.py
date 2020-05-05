@@ -13,28 +13,38 @@ import numpy as np
 import string
 import sys
 
-
-
-
 print("")
 print("")
 print("**************************************************************************")
 print("updatePeopleData")
 print("**************************************************************************")
 print("")
-print("Preparing people labels ...")
-print("Updating preople labels ...")
-print("")
+print("Preparing and updating people labels ...")
 print("")
 print("**************************************************************************")
 print("Processing:")
 print("**************************************************************************")
 print("")
 
-peopleFile = open("../resources/peopleFiles.txt", "rt")
+loopControlFileExists = 0
+
+while int(loopControlFileExists)==0:
+    try:
+        print("")
+        print("Reading peopleFiles.txt ...")
+        peopleFile = open("../resources/peopleFiles.txt", "rt")
+        loopControlFileExists = 1
+    except:
+        print("")
+        print("Sorry, peopleFiles.txt not founded, waiting 4 seconds to the next check ...")
+        print("")
+        time.sleep(4)
+
 peopleFileUpdated = open("../resources/peopleData.txt", "wt")
 
 # Clean image extension and to uppercase
+print("")
+print("Writing people labels ...")
 for line in peopleFile:
 	cleanNames=line.replace('.jpg', '')
 	cleanNames=cleanNames.replace('.jpeg', '')
@@ -46,7 +56,8 @@ for line in peopleFile:
 	cleanNames=cleanNames.replace('database/', '')
 	cleanNames=cleanNames.upper()
 	peopleFileUpdated.write(cleanNames)
-	
+
+# Close files
 peopleFile.close()
 peopleFileUpdated.close()
 
@@ -58,4 +69,6 @@ print("")
 print("**************************************************************************")
 print("Program finished")
 print("**************************************************************************")
-
+print()
+print("Press enter to close program ...")
+exitProgram = input()

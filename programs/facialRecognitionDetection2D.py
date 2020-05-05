@@ -27,6 +27,7 @@ import cv2
 import datetime
 import face_recognition
 import numpy as np
+import time
 import yarp
 
 
@@ -112,13 +113,6 @@ out_buf_image.resize(image_w, image_h)
 out_buf_array = np.zeros((image_h, image_w, 3), np.uint8)
 out_buf_image.setExternal(out_buf_array.data, out_buf_array.shape[1], out_buf_array.shape[0])
 
-# Read people file databate and create dynamic array
-peopleFile = open('../resources/peopleFiles.txt', 'r')
-peopleFileLines = peopleFile.readlines()
-
-countFiles = 0
-peopleFiles = []
-
 
 print("")
 print("")
@@ -129,21 +123,49 @@ print("")
 print("Reading people files database...")
 print("")
 
-for peopleFileLine in peopleFileLines:
-    print("Line {}: {}".format(countFiles, peopleFileLine.strip()))
-    countFiles=countFiles+1
-    sourceImg="../database/"+peopleFileLine.strip()
-    peopleFiles.append(sourceImg)
+loopControlPeopleFiles = 0
 
-print(peopleFiles)
+# Control peopleFiles.txt exist and wait until exist
+while int(loopControlPeopleFiles)==0:
+    try:
+        # Read people file databate and create dynamic array
+        peopleFile = open('../resources/peopleFiles.txt', 'r')
+        peopleFileLines = peopleFile.readlines()
+        countFiles = 0
+        peopleFiles = []
 
-# Read people name databate and create dynamic array
-peopleDataFile = open('../resources/peopleData.txt', 'r')
-peopleDataFileLines = peopleDataFile.readlines()
+        # Append files to array
+        for peopleFileLine in peopleFileLines:
+            print("Line {}: {}".format(countFiles, peopleFileLine.strip()))
+            countFiles=countFiles+1
+            sourceImg="../database/"+peopleFileLine.strip()
+            peopleFiles.append(sourceImg)
 
-countDataFiles = 0
-peopleDataFiles = []
+        # Print user files
+        print("")
+        print("")
+        print("**************************************************************************")
+        print("Users database files:")
+        print("**************************************************************************")
+        print("")
+        print("Users database files:")
+        print("")
+        print(peopleFiles)
+        loopControlPeopleFiles = 1
 
+    except:
+        print("")
+        print("Sorry, peopleFiles.txt not founded.")
+        print("I will wait 4 sec and will try to read again.")
+        print("")
+        print("")
+        print("")
+        print("**************************************************************************")
+        print("Waiting for peopleFiles.txt:")
+        print("**************************************************************************")
+        print("")
+        print("Waiting 4 seconds ....")
+        time.sleep(4)
 
 print("")
 print("")
@@ -154,13 +176,51 @@ print("")
 print("Reading people name database...")
 print("")
 
-for peopleDataFileLine in peopleDataFileLines:
-    print("Line {}: {}".format(countDataFiles, peopleDataFileLine.strip()))
-    countDataFiles=countDataFiles+1
-    peopleDataFiles.append(peopleDataFileLine.strip())
+loopControlPeopleData = 0
+
+# Control peopleData.txt exist and wait until exist
+while int(loopControlPeopleData)==0:
+    try:
+        # Read people name databate and create dynamic array
+        peopleDataFile = open('../resources/peopleData.txt', 'r')
+        peopleDataFileLines = peopleDataFile.readlines()
+
+        countDataFiles = 0
+        peopleDataFiles = []
+
+        # Append users to array
+        for peopleDataFileLine in peopleDataFileLines:
+            print("Line {}: {}".format(countDataFiles, peopleDataFileLine.strip()))
+            countDataFiles=countDataFiles+1
+            peopleDataFiles.append(peopleDataFileLine.strip())
 
 
-print(peopleDataFiles)
+        # Print user names
+        print("")
+        print("")
+        print("**************************************************************************")
+        print("Users database:")
+        print("**************************************************************************")
+        print("")
+        print("Users database:")
+        print("")
+        print(peopleDataFiles)
+
+        loopControlPeopleData = 1
+
+    except:
+        print("")
+        print("Sorry, peopleData.txt not founded.")
+        print("I will wait 4 sec and will try to read again.")
+        print("")
+        print("")
+        print("")
+        print("**************************************************************************")
+        print("Waiting for peopleData.txt:")
+        print("**************************************************************************")
+        print("")
+        print("Waiting 4 seconds ....")
+        time.sleep(4)
 
 print("")
 print("")
@@ -174,7 +234,7 @@ print("")
 peopleDetection = []
 peopleDetectionEncoding = []
 countArray = 0
-
+# Append to array data
 for people in peopleFileLines:
 
     print(peopleFiles[countArray])
@@ -182,40 +242,46 @@ for people in peopleFileLines:
     peopleDetectionEncoding.append(face_recognition.face_encodings(peopleDetection[countArray])[0])
     countArray = countArray + 1
 
+# Append to array known faces
 known_face_encodings = []
-
 countArray2 = 0
 
 for peopleKnown in peopleFileLines:
     known_face_encodings.append(peopleDetectionEncoding[countArray2])
     countArray2 = countArray2 +1
 
-
+# Append to array known names
 known_face_names = []
-
 countArray3 = 0
+
 for peopleKnownNames in peopleFileLines:
     known_face_names.append(peopleDataFiles[countArray3])
     countArray3 = countArray3 +1
 
 print("")
+print("")
+print("**************************************************************************")
+print("Waiting for input image source:")
+print("**************************************************************************")
+print("")
+print("")
 print ('Waiting input image source...')
 print("")
 
-
-print("")
-print("")
-print("**************************************************************************")
-print("Processing:")
-print("**************************************************************************")
-print("")
-print("Processing data ...")
 
 # Loop process
 while True:
 
     # Recieve image source
     frame = faceRecognitionDetection2D_portIn.read()
+
+    print("")
+    print("")
+    print("**************************************************************************")
+    print("Processing:")
+    print("**************************************************************************")
+    print("")
+    print("Processing data ...")
 
     # Buffer processed image
     in_buf_image.copy(frame)
@@ -233,8 +299,6 @@ while True:
 
         # Compare known faces
         matches = face_recognition.compare_faces(known_face_encodings, face_encoding)
-
-
         face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
         best_match_index = np.argmin(face_distances)
 
@@ -261,8 +325,8 @@ while True:
         print("**************************************************************************")
         print("Resume:")
         print("**************************************************************************")
-        print ("\n")
-        print ("Detection: "+ str(name))
+        print("\n")
+        print("Detection: "+ str(name))
         print("Coordinates:")
         print("X: ", x)
         print("Y: ", y)
@@ -284,18 +348,23 @@ while True:
         coordinates.addString(str(y))
         faceRecognitionDetection2D_portOutCoord.write(coordinates)
 
-        # Sending processed image
+    # Sending processed image
     print("")
     print ('Sending processed image...')
     print("")
     out_buf_array[:,:] = in_buf_array
     faceRecognitionDetection2D_portOut.write(out_buf_image)
 
+# Close ports
 print ('Closing ports...')
 faceRecognitionDetection2D_portIn.close()
 faceRecognitionDetection2D_portOut.close()
 faceRecognitionDetection2D_portOutDet.close()
 faceRecognitionDetection2D_portOutCoord.close()
+
+# Close files
+peopleFile.close()
+peopleDataFile.close()
 
 
 print("")
