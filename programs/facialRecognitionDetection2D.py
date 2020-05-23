@@ -40,10 +40,10 @@ print("*************************************************************************
 print("**************************************************************************")
 
 print("")
-print("Starting system...")
+print("Starting system ...")
 
 print("")
-print("Loading facialRecognitionDetection2D module...")
+print("Loading facialRecognitionDetection2D module ...")
 
 
 print("")
@@ -53,14 +53,14 @@ print("YARP configuration:")
 print("**************************************************************************")
 print("")
 print("")
-print("Initializing YARP network...")
+print("Initializing YARP network ...")
 
 # Init YARP Network
 yarp.Network.init()
 
 
 print("")
-print("Opening image input port with name /facialRecognitionDetection2D/img:i...")
+print("[INFO] Opening image input port with name /facialRecognitionDetection2D/img:i ...")
 
 # Open input image port
 faceRecognitionDetection2D_portIn = yarp.BufferedPortImageRgb()
@@ -68,7 +68,7 @@ faceRecognitionDetection2D_portNameIn = '/facialRecognitionDetection2D/img:i'
 faceRecognitionDetection2D_portIn.open(faceRecognitionDetection2D_portNameIn)
 
 print("")
-print("Opening image output port with name /facialRecognitionDetection2D/img:o...")
+print("[INFO] Opening image output port with name /facialRecognitionDetection2D/img:o ...")
 
 # Open output image port
 faceRecognitionDetection2D_portOut = yarp.Port()
@@ -76,7 +76,7 @@ faceRecognitionDetection2D_portNameOut = '/facialRecognitionDetection2D/img:o'
 faceRecognitionDetection2D_portOut.open(faceRecognitionDetection2D_portNameOut)
 
 print("")
-print("Opening data output port with name /facialRecognitionDetection2D/data:o...")
+print("[INFO] Opening data output port with name /facialRecognitionDetection2D/data:o ...")
 
 # Open output data port
 faceRecognitionDetection2D_portOutDet = yarp.Port()
@@ -84,7 +84,7 @@ faceRecognitionDetection2D_portNameOutDet = '/facialRecognitionDetection2D/data:
 faceRecognitionDetection2D_portOutDet.open(faceRecognitionDetection2D_portNameOutDet)
 
 print("")
-print("Opening data output port with name /facialRecognitionDetection2D/coord:o...")
+print("[INFO] Opening data output port with name /facialRecognitionDetection2D/coord:o ...")
 
 # Open output coordinates data port
 faceRecognitionDetection2D_portOutCoord = yarp.Port()
@@ -120,7 +120,7 @@ print("*************************************************************************
 print("Reading files database:")
 print("**************************************************************************")
 print("")
-print("Reading people files database...")
+print("Reading people files database ...")
 print("")
 
 loopControlPeopleFiles = 0
@@ -164,7 +164,7 @@ while int(loopControlPeopleFiles)==0:
         print("Waiting for peopleFiles.txt:")
         print("**************************************************************************")
         print("")
-        print("Waiting 4 seconds ....")
+        print("Waiting 4 seconds ...")
         time.sleep(4)
 
 print("")
@@ -173,7 +173,7 @@ print("*************************************************************************
 print("Reading database:")
 print("**************************************************************************")
 print("")
-print("Reading people name database...")
+print("Reading people name database ...")
 print("")
 
 loopControlPeopleData = 0
@@ -210,8 +210,8 @@ while int(loopControlPeopleData)==0:
 
     except:
         print("")
-        print("Sorry, peopleData.txt not founded.")
-        print("I will wait 4 sec and will try to read again.")
+        print("[ERROR] Sorry, peopleData.txt not founded.")
+        print("[INFO] I will wait 4 sec and will try to read again.")
         print("")
         print("")
         print("")
@@ -219,7 +219,7 @@ while int(loopControlPeopleData)==0:
         print("Waiting for peopleData.txt:")
         print("**************************************************************************")
         print("")
-        print("Waiting 4 seconds ....")
+        print("[INFO] Waiting 4 seconds ...")
         time.sleep(4)
 
 print("")
@@ -228,7 +228,7 @@ print("*************************************************************************
 print("Training models:")
 print("**************************************************************************")
 print("")
-print("Training people database...")
+print("Training people database ...")
 print("")
 
 peopleDetection = []
@@ -265,7 +265,7 @@ print("Waiting for input image source:")
 print("**************************************************************************")
 print("")
 print("")
-print ('Waiting input image source...')
+print("Waiting input image source ...")
 print("")
 
 
@@ -326,11 +326,11 @@ while True:
         print("Resume:")
         print("**************************************************************************")
         print("\n")
-        print("Detection: "+ str(name))
-        print("Coordinates:")
+        print("[RESULTS] Detection: "+ str(name))
+        print("[INFO] Coordinates:")
         print("X: ", x)
         print("Y: ", y)
-        print("Detection time: "+ str(timeDetection))
+        print("[INFO] Detection time: "+ str(timeDetection))
 
         # Sending processed detection
         cmd.clear()
@@ -350,13 +350,13 @@ while True:
 
     # Sending processed image
     print("")
-    print ('Sending processed image...')
+    print("[INFO] Sending processed image ...")
     print("")
     out_buf_array[:,:] = in_buf_array
     faceRecognitionDetection2D_portOut.write(out_buf_image)
 
 # Close ports
-print ('Closing ports...')
+print("Closing ports ...")
 faceRecognitionDetection2D_portIn.close()
 faceRecognitionDetection2D_portOut.close()
 faceRecognitionDetection2D_portOutDet.close()
