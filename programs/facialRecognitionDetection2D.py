@@ -1,16 +1,13 @@
 '''
- * ************************************************************
- *      Program: Facial Recognition Detection 2D Module
- *      Type: Python
- *      Author: David Velasco Garcia @davidvelascogarcia
- * ************************************************************
- */
-
-/*
+  * ************************************************************
+  *      Program: Facial Recognition Detection 2D Module
+  *      Type: Python
+  *      Author: David Velasco Garcia @davidvelascogarcia
+  * ************************************************************
   *
   * | INPUT PORT                           | CONTENT                                                 |
   * |--------------------------------------|---------------------------------------------------------|
-  * | /facialRecognitionDetection2D/img:i  | Input image             n                               |
+  * | /facialRecognitionDetection2D/img:i  | Input image                                             |
   *
   *
   * | OUTPUT PORT                          | CONTENT                                                 |
@@ -18,8 +15,6 @@
   * | /facialRecognitionDetection2D/img:o  | Output image with facial detection                      |
   * | /facialRecognitionDetection2D/data:o | Output result, facial recognition data                  |
   * | /facialRecognitionDetection2D/coord:o| Output result, facial recognition coordinates           |
-
-  *
 '''
 
 # Libraries
@@ -63,39 +58,39 @@ print("")
 print("[INFO] Opening image input port with name /facialRecognitionDetection2D/img:i ...")
 
 # Open input image port
-faceRecognitionDetection2D_portIn = yarp.BufferedPortImageRgb()
-faceRecognitionDetection2D_portNameIn = '/facialRecognitionDetection2D/img:i'
-faceRecognitionDetection2D_portIn.open(faceRecognitionDetection2D_portNameIn)
+facialRecognitionDetection2D_portIn = yarp.BufferedPortImageRgb()
+facialRecognitionDetection2D_portNameIn = '/facialRecognitionDetection2D/img:i'
+facialRecognitionDetection2D_portIn.open(facialRecognitionDetection2D_portNameIn)
 
 print("")
 print("[INFO] Opening image output port with name /facialRecognitionDetection2D/img:o ...")
 
 # Open output image port
-faceRecognitionDetection2D_portOut = yarp.Port()
-faceRecognitionDetection2D_portNameOut = '/facialRecognitionDetection2D/img:o'
-faceRecognitionDetection2D_portOut.open(faceRecognitionDetection2D_portNameOut)
+facialRecognitionDetection2D_portOut = yarp.Port()
+facialRecognitionDetection2D_portNameOut = '/facialRecognitionDetection2D/img:o'
+facialRecognitionDetection2D_portOut.open(facialRecognitionDetection2D_portNameOut)
 
 print("")
 print("[INFO] Opening data output port with name /facialRecognitionDetection2D/data:o ...")
 
 # Open output data port
-faceRecognitionDetection2D_portOutDet = yarp.Port()
-faceRecognitionDetection2D_portNameOutDet = '/facialRecognitionDetection2D/data:o'
-faceRecognitionDetection2D_portOutDet.open(faceRecognitionDetection2D_portNameOutDet)
+facialRecognitionDetection2D_portOutDet = yarp.Port()
+facialRecognitionDetection2D_portNameOutDet = '/facialRecognitionDetection2D/data:o'
+facialRecognitionDetection2D_portOutDet.open(facialRecognitionDetection2D_portNameOutDet)
 
 print("")
 print("[INFO] Opening data output port with name /facialRecognitionDetection2D/coord:o ...")
 
 # Open output coordinates data port
-faceRecognitionDetection2D_portOutCoord = yarp.Port()
-faceRecognitionDetection2D_portNameOutCoord = '/facialRecognitionDetection2D/coord:o'
-faceRecognitionDetection2D_portOutCoord.open(faceRecognitionDetection2D_portNameOutCoord)
+facialRecognitionDetection2D_portOutCoord = yarp.Port()
+facialRecognitionDetection2D_portNameOutCoord = '/facialRecognitionDetection2D/coord:o'
+facialRecognitionDetection2D_portOutCoord.open(facialRecognitionDetection2D_portNameOutCoord)
 
 # Create data bootle
-cmd=yarp.Bottle()
+outputBottleFacialRecognitionDetection2D = yarp.Bottle()
 
 # Create coordinates bootle
-coordinates=yarp.Bottle()
+coordinatesBottleFacialRecognitionDetection2D = yarp.Bottle()
 
 # Image size
 image_w = 640
@@ -148,23 +143,16 @@ while int(loopControlPeopleFiles)==0:
         print("Users database files:")
         print("**************************************************************************")
         print("")
-        print("Users database files:")
+        print("[INFO] Users database files:")
         print("")
         print(peopleFiles)
         loopControlPeopleFiles = 1
 
     except:
         print("")
-        print("Sorry, peopleFiles.txt not founded.")
-        print("I will wait 4 sec and will try to read again.")
+        print("[ERROR] Sorry, peopleFiles.txt not founded, next check in 4 seconds.")
         print("")
         print("")
-        print("")
-        print("**************************************************************************")
-        print("Waiting for peopleFiles.txt:")
-        print("**************************************************************************")
-        print("")
-        print("Waiting 4 seconds ...")
         time.sleep(4)
 
 print("")
@@ -202,7 +190,7 @@ while int(loopControlPeopleData)==0:
         print("Users database:")
         print("**************************************************************************")
         print("")
-        print("Users database:")
+        print("[INFO] Users database:")
         print("")
         print(peopleDataFiles)
 
@@ -210,16 +198,9 @@ while int(loopControlPeopleData)==0:
 
     except:
         print("")
-        print("[ERROR] Sorry, peopleData.txt not founded.")
-        print("[INFO] I will wait 4 sec and will try to read again.")
+        print("[ERROR] Sorry, peopleData.txt not founded, next check in 4 seconds.")
         print("")
         print("")
-        print("")
-        print("**************************************************************************")
-        print("Waiting for peopleData.txt:")
-        print("**************************************************************************")
-        print("")
-        print("[INFO] Waiting 4 seconds ...")
         time.sleep(4)
 
 print("")
@@ -273,7 +254,7 @@ print("")
 while True:
 
     # Recieve image source
-    frame = faceRecognitionDetection2D_portIn.read()
+    frame = facialRecognitionDetection2D_portIn.read()
 
     print("")
     print("")
@@ -314,8 +295,8 @@ while True:
         cv2.putText(in_buf_array, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
 
         # Get people coordinates
-        x=left
-        y=480-bottom
+        x = left
+        y = 480 - bottom
 
         # Get time Detection
         timeDetection = datetime.datetime.now()
@@ -325,7 +306,7 @@ while True:
         print("**************************************************************************")
         print("Resume:")
         print("**************************************************************************")
-        print("\n")
+        print("")
         print("[RESULTS] Detection: "+ str(name))
         print("[INFO] Coordinates:")
         print("X: ", x)
@@ -333,34 +314,46 @@ while True:
         print("[INFO] Detection time: "+ str(timeDetection))
 
         # Sending processed detection
-        cmd.clear()
-        cmd.addString("Detection:")
-        cmd.addString(name)
-        cmd.addString("Time:")
-        cmd.addString(str(timeDetection))
-        faceRecognitionDetection2D_portOutDet.write(cmd)
+        outputBottleFacialRecognitionDetection2D.clear()
+        outputBottleFacialRecognitionDetection2D.addString("Detection:")
+        outputBottleFacialRecognitionDetection2D.addString(name)
+        outputBottleFacialRecognitionDetection2D.addString("Time:")
+        outputBottleFacialRecognitionDetection2D.addString(str(timeDetection))
+        facialRecognitionDetection2D_portOutDet.write(outputBottleFacialRecognitionDetection2D)
+
 
         # Sending coordinates detection
-        coordinates.clear()
-        coordinates.addString("X: ")
-        coordinates.addString(str(x))
-        coordinates.addString("Y: ")
-        coordinates.addString(str(y))
-        faceRecognitionDetection2D_portOutCoord.write(coordinates)
+        coordinatesBottleFacialRecognitionDetection2D.clear()
+        coordinatesBottleFacialRecognitionDetection2D.addString("X: ")
+        coordinatesBottleFacialRecognitionDetection2D.addString(str(x))
+        coordinatesBottleFacialRecognitionDetection2D.addString("Y: ")
+        coordinatesBottleFacialRecognitionDetection2D.addString(str(y))
+        facialRecognitionDetection2D_portOutCoord.write(coordinatesBottleFacialRecognitionDetection2D)
+
+    # Update time detection
+    timeDetection = datetime.datetime.now()
+
+    # Sending processed detection if none detection
+    outputBottleFacialRecognitionDetection2D.clear()
+    outputBottleFacialRecognitionDetection2D.addString("Detection:")
+    outputBottleFacialRecognitionDetection2D.addString(name)
+    outputBottleFacialRecognitionDetection2D.addString("Time:")
+    outputBottleFacialRecognitionDetection2D.addString(str(timeDetection))
+    facialRecognitionDetection2D_portOutDet.write(outputBottleFacialRecognitionDetection2D)
 
     # Sending processed image
     print("")
-    print("[INFO] Sending processed image ...")
+    print("[INFO] Sending processed image at " + str(timeDetection) + " ...")
     print("")
     out_buf_array[:,:] = in_buf_array
-    faceRecognitionDetection2D_portOut.write(out_buf_image)
+    facialRecognitionDetection2D_portOut.write(out_buf_image)
 
 # Close ports
-print("Closing ports ...")
-faceRecognitionDetection2D_portIn.close()
-faceRecognitionDetection2D_portOut.close()
-faceRecognitionDetection2D_portOutDet.close()
-faceRecognitionDetection2D_portOutCoord.close()
+print("[INFO[ Closing ports ...")
+facialRecognitionDetection2D_portIn.close()
+facialRecognitionDetection2D_portOut.close()
+facialRecognitionDetection2D_portOutDet.close()
+facialRecognitionDetection2D_portOutCoord.close()
 
 # Close files
 peopleFile.close()
@@ -372,3 +365,6 @@ print("")
 print("**************************************************************************")
 print("Program finished")
 print("**************************************************************************")
+print("")
+print("facialRecognitionDetection2D program finished correctly. ")
+print("")
