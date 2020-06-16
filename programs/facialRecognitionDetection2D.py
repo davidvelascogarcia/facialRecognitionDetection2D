@@ -121,19 +121,21 @@ print("")
 loopControlPeopleFiles = 0
 
 # Control peopleFiles.txt exist and wait until exist
-while int(loopControlPeopleFiles)==0:
+while int(loopControlPeopleFiles) == 0:
     try:
         # Read people file databate and create dynamic array
         peopleFile = open('../resources/peopleFiles.txt', 'r')
         peopleFileLines = peopleFile.readlines()
+
         countFiles = 0
         peopleFiles = []
 
         # Append files to array
         for peopleFileLine in peopleFileLines:
-            print("Line {}: {}".format(countFiles, peopleFileLine.strip()))
-            countFiles=countFiles+1
-            sourceImg="../database/"+peopleFileLine.strip()
+
+            print("Line " + str(countFiles) + ": " + str(peopleFileLine.strip()))
+            countFiles = countFiles + 1
+            sourceImg = "../database/" + peopleFileLine.strip()
             peopleFiles.append(sourceImg)
 
         # Print user files
@@ -146,6 +148,7 @@ while int(loopControlPeopleFiles)==0:
         print("[INFO] Users database files:")
         print("")
         print(peopleFiles)
+
         loopControlPeopleFiles = 1
 
     except:
@@ -167,7 +170,8 @@ print("")
 loopControlPeopleData = 0
 
 # Control peopleData.txt exist and wait until exist
-while int(loopControlPeopleData)==0:
+while int(loopControlPeopleData) == 0:
+
     try:
         # Read people name databate and create dynamic array
         peopleDataFile = open('../resources/peopleData.txt', 'r')
@@ -178,10 +182,10 @@ while int(loopControlPeopleData)==0:
 
         # Append users to array
         for peopleDataFileLine in peopleDataFileLines:
-            print("Line {}: {}".format(countDataFiles, peopleDataFileLine.strip()))
-            countDataFiles=countDataFiles+1
-            peopleDataFiles.append(peopleDataFileLine.strip())
 
+            print("Line " + str(countDataFiles) + ": " + str(peopleDataFileLine.strip()))
+            countDataFiles = countDataFiles + 1
+            peopleDataFiles.append(peopleDataFileLine.strip())
 
         # Print user names
         print("")
@@ -214,30 +218,36 @@ print("")
 
 peopleDetection = []
 peopleDetectionEncoding = []
-countArray = 0
-# Append to array data
-for people in peopleFileLines:
+countPeopleFiles = 0
 
-    print(peopleFiles[countArray])
-    peopleDetection.append(face_recognition.load_image_file(peopleFiles[countArray]))
-    peopleDetectionEncoding.append(face_recognition.face_encodings(peopleDetection[countArray])[0])
-    countArray = countArray + 1
+# Load to train all image files to database
+for people in peopleFileLines:
+    print("[INFO] Loading to database " + str(peopleFiles[countPeopleFiles]) + " ...")
+
+    # Load image to array
+    peopleDetection.append(face_recognition.load_image_file(peopleFiles[countPeopleFiles]))
+
+    # Detect face and loac face to array
+    peopleDetectionEncoding.append(face_recognition.face_encodings(peopleDetection[countPeopleFiles])[0])
+
+    countPeopleFiles = countPeopleFiles + 1
 
 # Append to array known faces
-known_face_encodings = []
-countArray2 = 0
+knownFacesEnconding = []
+countKnownPeople = 0
 
 for peopleKnown in peopleFileLines:
-    known_face_encodings.append(peopleDetectionEncoding[countArray2])
-    countArray2 = countArray2 +1
+    knownFacesEnconding.append(peopleDetectionEncoding[countKnownPeople])
+    countKnownPeople = countKnownPeople + 1
 
 # Append to array known names
-known_face_names = []
-countArray3 = 0
+knownFacesNames = []
+countPeopleNames = 0
 
 for peopleKnownNames in peopleFileLines:
-    known_face_names.append(peopleDataFiles[countArray3])
-    countArray3 = countArray3 +1
+    knownFacesNames.append(peopleDataFiles[countPeopleNames])
+
+    countPeopleNames = countPeopleNames + 1
 
 print("")
 print("")
@@ -249,9 +259,11 @@ print("")
 print("Waiting input image source ...")
 print("")
 
+# Control loopControlReceiveImageSource
+loopControlReceiveImageSource = 0
 
 # Loop process
-while True:
+while int(loopControlReceiveImageSource) == 0:
 
     # Recieve image source
     frame = facialRecognitionDetection2D_portIn.read()
@@ -269,77 +281,97 @@ while True:
     assert in_buf_array.__array_interface__['data'][0] == in_buf_image.getRawImage().__int__()
 
     # YARP -> OpenCV
-    rgb_frame = in_buf_array[:, :, ::-1]
+    rgbFrame = in_buf_array[:, :, ::-1]
 
-    # Load known people
-    face_locations = face_recognition.face_locations(rgb_frame)
-    face_encodings = face_recognition.face_encodings(rgb_frame, face_locations)
-    name = "None"
-    # Process image for detection
-    for (top, right, bottom, left), face_encoding in zip(face_locations, face_encodings):
+    # Detect faces in rgbFrame
+    faceLocations = face_recognition.face_locations(rgbFrame)
 
-        # Compare known faces
-        matches = face_recognition.compare_faces(known_face_encodings, face_encoding)
-        face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
-        best_match_index = np.argmin(face_distances)
+    # Encode face detected
+    faceEncodings = face_recognition.face_encodings(rgbFrame, faceLocations)
 
-        if matches[best_match_index]:
-           name = known_face_names[best_match_index]
-        else:
-           name = "Unknown"
+    # Pre-configure detected name as "None"
+    detectedPerson = "None"
 
-        # Paint processed image
-        cv2.rectangle(in_buf_array, (left, top), (right, bottom), (0, 0, 255), 2)
-        cv2.rectangle(in_buf_array, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
-        font = cv2.FONT_HERSHEY_DUPLEX
-        cv2.putText(in_buf_array, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
+    # If faces has been detected
+    if str(faceLocations) != "[]":
 
-        # Get people coordinates
-        x = left
-        y = 480 - bottom
+        # Process image with faces detected
+        for (top, right, bottom, left), faceEncoding in zip(faceLocations, faceEncodings):
 
-        # Get time Detection
+            # Compare faceEncoding with known faces
+            faceMatches = face_recognition.compare_faces(knownFacesEnconding, faceEncoding)
+
+            # Compare faceEncoding with known faces to get distance
+            faceMatchesDistance = face_recognition.face_distance(knownFacesEnconding, faceEncoding)
+
+            # Extract index match
+            bestMatchIndex = np.argmin(faceMatchesDistance)
+
+            # If detected person is in database get name
+            if faceMatches[bestMatchIndex]:
+               detectedPerson = knownFacesNames[bestMatchIndex]
+
+            # If isn´t in database is "Unknown"
+            else:
+               detectedPerson = "Unknown"
+
+            # Paint processed image
+            # Paint rectange in detected face
+            cv2.rectangle(in_buf_array, (left, top), (right, bottom), (0, 0, 255), 2)
+
+            # Paint rectangle to put name
+            cv2.rectangle(in_buf_array, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
+
+            # Paint name
+            cv2.putText(in_buf_array, detectedPerson, (left + 6, bottom - 6), cv2.FONT_HERSHEY_DUPLEX, 1.0, (255, 255, 255), 1)
+
+            # Get people coordinates
+            x = left
+            y = 480 - bottom
+
+            # Get time Detection
+            timeDetection = datetime.datetime.now()
+
+            # Print processed data
+            print("")
+            print("**************************************************************************")
+            print("Resume:")
+            print("**************************************************************************")
+            print("")
+            print("[RESULTS] Detection: "+ str(detectedPerson))
+            print("[INFO] Coordinates:")
+            print("X: ", x)
+            print("Y: ", y)
+            print("[INFO] Detection time: "+ str(timeDetection))
+
+            # Sending processed detection
+            outputBottleFacialRecognitionDetection2D.clear()
+            outputBottleFacialRecognitionDetection2D.addString("Detection:")
+            outputBottleFacialRecognitionDetection2D.addString(detectedPerson)
+            outputBottleFacialRecognitionDetection2D.addString("Time:")
+            outputBottleFacialRecognitionDetection2D.addString(str(timeDetection))
+            facialRecognitionDetection2D_portOutDet.write(outputBottleFacialRecognitionDetection2D)
+
+            # Sending coordinates detection
+            coordinatesBottleFacialRecognitionDetection2D.clear()
+            coordinatesBottleFacialRecognitionDetection2D.addString("X: ")
+            coordinatesBottleFacialRecognitionDetection2D.addString(str(x))
+            coordinatesBottleFacialRecognitionDetection2D.addString("Y: ")
+            coordinatesBottleFacialRecognitionDetection2D.addString(str(y))
+            facialRecognitionDetection2D_portOutCoord.write(coordinatesBottleFacialRecognitionDetection2D)
+
+    else:
+
+        # Update time detection
         timeDetection = datetime.datetime.now()
 
-        # Print processed data
-        print("")
-        print("**************************************************************************")
-        print("Resume:")
-        print("**************************************************************************")
-        print("")
-        print("[RESULTS] Detection: "+ str(name))
-        print("[INFO] Coordinates:")
-        print("X: ", x)
-        print("Y: ", y)
-        print("[INFO] Detection time: "+ str(timeDetection))
-
-        # Sending processed detection
+        # Sending processed detection if none detection
         outputBottleFacialRecognitionDetection2D.clear()
         outputBottleFacialRecognitionDetection2D.addString("Detection:")
-        outputBottleFacialRecognitionDetection2D.addString(name)
+        outputBottleFacialRecognitionDetection2D.addString(detectedPerson)
         outputBottleFacialRecognitionDetection2D.addString("Time:")
         outputBottleFacialRecognitionDetection2D.addString(str(timeDetection))
         facialRecognitionDetection2D_portOutDet.write(outputBottleFacialRecognitionDetection2D)
-
-
-        # Sending coordinates detection
-        coordinatesBottleFacialRecognitionDetection2D.clear()
-        coordinatesBottleFacialRecognitionDetection2D.addString("X: ")
-        coordinatesBottleFacialRecognitionDetection2D.addString(str(x))
-        coordinatesBottleFacialRecognitionDetection2D.addString("Y: ")
-        coordinatesBottleFacialRecognitionDetection2D.addString(str(y))
-        facialRecognitionDetection2D_portOutCoord.write(coordinatesBottleFacialRecognitionDetection2D)
-
-    # Update time detection
-    timeDetection = datetime.datetime.now()
-
-    # Sending processed detection if none detection
-    outputBottleFacialRecognitionDetection2D.clear()
-    outputBottleFacialRecognitionDetection2D.addString("Detection:")
-    outputBottleFacialRecognitionDetection2D.addString(name)
-    outputBottleFacialRecognitionDetection2D.addString("Time:")
-    outputBottleFacialRecognitionDetection2D.addString(str(timeDetection))
-    facialRecognitionDetection2D_portOutDet.write(outputBottleFacialRecognitionDetection2D)
 
     # Sending processed image
     print("")
