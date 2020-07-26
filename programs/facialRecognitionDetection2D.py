@@ -36,19 +36,20 @@ print("*************************************************************************
 
 print("")
 print("Starting system ...")
+print("")
 
 print("")
 print("Loading facialRecognitionDetection2D module ...")
-
-
 print("")
+
+
 print("")
 print("**************************************************************************")
 print("YARP configuration:")
 print("**************************************************************************")
 print("")
-print("")
 print("Initializing YARP network ...")
+print("")
 
 # Init YARP Network
 yarp.Network.init()
@@ -56,6 +57,7 @@ yarp.Network.init()
 
 print("")
 print("[INFO] Opening image input port with name /facialRecognitionDetection2D/img:i ...")
+print("")
 
 # Open input image port
 facialRecognitionDetection2D_portIn = yarp.BufferedPortImageRgb()
@@ -64,6 +66,7 @@ facialRecognitionDetection2D_portIn.open(facialRecognitionDetection2D_portNameIn
 
 print("")
 print("[INFO] Opening image output port with name /facialRecognitionDetection2D/img:o ...")
+print("")
 
 # Open output image port
 facialRecognitionDetection2D_portOut = yarp.Port()
@@ -72,6 +75,7 @@ facialRecognitionDetection2D_portOut.open(facialRecognitionDetection2D_portNameO
 
 print("")
 print("[INFO] Opening data output port with name /facialRecognitionDetection2D/data:o ...")
+print("")
 
 # Open output data port
 facialRecognitionDetection2D_portOutDet = yarp.Port()
@@ -80,6 +84,7 @@ facialRecognitionDetection2D_portOutDet.open(facialRecognitionDetection2D_portNa
 
 print("")
 print("[INFO] Opening data output port with name /facialRecognitionDetection2D/coord:o ...")
+print("")
 
 # Open output coordinates data port
 facialRecognitionDetection2D_portOutCoord = yarp.Port()
@@ -110,12 +115,15 @@ out_buf_image.setExternal(out_buf_array.data, out_buf_array.shape[1], out_buf_ar
 
 
 print("")
+print("[INFO] YARP network configured correctly.")
+print("")
+
 print("")
 print("**************************************************************************")
 print("Reading files database:")
 print("**************************************************************************")
 print("")
-print("Reading people files database ...")
+print("[INFO] Reading people files database at " + str(datetime.datetime.now()) + " ...")
 print("")
 
 loopControlPeopleFiles = 0
@@ -140,7 +148,6 @@ while int(loopControlPeopleFiles) == 0:
 
         # Print user files
         print("")
-        print("")
         print("**************************************************************************")
         print("Users database files:")
         print("**************************************************************************")
@@ -155,16 +162,14 @@ while int(loopControlPeopleFiles) == 0:
         print("")
         print("[ERROR] Sorry, peopleFiles.txt not founded, next check in 4 seconds.")
         print("")
-        print("")
         time.sleep(4)
 
-print("")
 print("")
 print("**************************************************************************")
 print("Reading database:")
 print("**************************************************************************")
 print("")
-print("Reading people name database ...")
+print("[INFO] Reading people name database at " + str(datetime.datetime.now()) + " ...")
 print("")
 
 loopControlPeopleData = 0
@@ -189,7 +194,6 @@ while int(loopControlPeopleData) == 0:
 
         # Print user names
         print("")
-        print("")
         print("**************************************************************************")
         print("Users database:")
         print("**************************************************************************")
@@ -204,16 +208,14 @@ while int(loopControlPeopleData) == 0:
         print("")
         print("[ERROR] Sorry, peopleData.txt not founded, next check in 4 seconds.")
         print("")
-        print("")
         time.sleep(4)
 
-print("")
 print("")
 print("**************************************************************************")
 print("Training models:")
 print("**************************************************************************")
 print("")
-print("Training people database ...")
+print("[INFO] Training people database at " + str(datetime.datetime.now()) + " ...")
 print("")
 
 peopleDetection = []
@@ -222,6 +224,7 @@ countPeopleFiles = 0
 
 # Load to train all image files to database
 for people in peopleFileLines:
+
     print("[INFO] Loading to database " + str(peopleFiles[countPeopleFiles]) + " ...")
 
     # Load image to array
@@ -249,32 +252,31 @@ for peopleKnownNames in peopleFileLines:
 
     countPeopleNames = countPeopleNames + 1
 
-print("")
-print("")
-print("**************************************************************************")
-print("Waiting for input image source:")
-print("**************************************************************************")
-print("")
-print("")
-print("Waiting input image source ...")
-print("")
-
 # Control loopControlReceiveImageSource
 loopControlReceiveImageSource = 0
 
 # Loop process
 while int(loopControlReceiveImageSource) == 0:
 
+    print("")
+    print("**************************************************************************")
+    print("Waiting for input image source:")
+    print("**************************************************************************")
+    print("")
+    print("[INFO] Waiting input image source at " + str(datetime.datetime.now()) + " ...")
+    print("")
+
+
     # Recieve image source
     frame = facialRecognitionDetection2D_portIn.read()
 
     print("")
-    print("")
     print("**************************************************************************")
-    print("Processing:")
+    print("Processing input image:")
     print("**************************************************************************")
     print("")
-    print("Processing data ...")
+    print("[INFO] Processing input image at " + str(datetime.datetime.now()) + " ...")
+    print("")
 
     # Buffer processed image
     in_buf_image.copy(frame)
@@ -329,54 +331,50 @@ while int(loopControlReceiveImageSource) == 0:
             x = left
             y = 480 - bottom
 
-            # Get time Detection
-            timeDetection = datetime.datetime.now()
-
             # Print processed data
             print("")
             print("**************************************************************************")
-            print("Resume:")
+            print("Resume results:")
             print("**************************************************************************")
             print("")
-            print("[RESULTS] Detection: "+ str(detectedPerson))
-            print("[INFO] Coordinates:")
-            print("X: ", x)
-            print("Y: ", y)
-            print("[INFO] Detection time: "+ str(timeDetection))
+            print("[RESULTS] facialRecognitionDetection2D results:")
+            print("")
+            print("[DETECTION] Facial recognition detection: " + str(detectedPerson))
+            print("[COORDINATES] Coordinates: X:" + str(x) + ", Y: " + str(y))
+            print("[DATE] Detection time: " + str(datetime.datetime.now()))
+            print("")
 
-            # Sending processed detection
+            # Sending processed facialRecognitionDetection2D detection
             outputBottleFacialRecognitionDetection2D.clear()
-            outputBottleFacialRecognitionDetection2D.addString("Detection:")
+            outputBottleFacialRecognitionDetection2D.addString("DETECTION:")
             outputBottleFacialRecognitionDetection2D.addString(detectedPerson)
-            outputBottleFacialRecognitionDetection2D.addString("Time:")
-            outputBottleFacialRecognitionDetection2D.addString(str(timeDetection))
+            outputBottleFacialRecognitionDetection2D.addString("DATE:")
+            outputBottleFacialRecognitionDetection2D.addString(str(datetime.datetime.now()))
             facialRecognitionDetection2D_portOutDet.write(outputBottleFacialRecognitionDetection2D)
 
             # Sending coordinates detection
             coordinatesBottleFacialRecognitionDetection2D.clear()
-            coordinatesBottleFacialRecognitionDetection2D.addString("X: ")
-            coordinatesBottleFacialRecognitionDetection2D.addString(str(x))
-            coordinatesBottleFacialRecognitionDetection2D.addString("Y: ")
-            coordinatesBottleFacialRecognitionDetection2D.addString(str(y))
+            coordinatesBottleFacialRecognitionDetection2D.addString("COORDINATES:")
+            coordinatesBottleFacialRecognitionDetection2D.addString("X: " + str(x) + ", Y: " + str(y))
+            coordinatesBottleFacialRecognitionDetection2D.addString("DATE:")
+            coordinatesBottleFacialRecognitionDetection2D.addString(str(datetime.datetime.now()))
             facialRecognitionDetection2D_portOutCoord.write(coordinatesBottleFacialRecognitionDetection2D)
 
     else:
 
-        # Update time detection
-        timeDetection = datetime.datetime.now()
-
         # Sending processed detection if none detection
         outputBottleFacialRecognitionDetection2D.clear()
-        outputBottleFacialRecognitionDetection2D.addString("Detection:")
+        outputBottleFacialRecognitionDetection2D.addString("DETECTION:")
         outputBottleFacialRecognitionDetection2D.addString(detectedPerson)
-        outputBottleFacialRecognitionDetection2D.addString("Time:")
-        outputBottleFacialRecognitionDetection2D.addString(str(timeDetection))
+        outputBottleFacialRecognitionDetection2D.addString("DATE:")
+        outputBottleFacialRecognitionDetection2D.addString(str(datetime.datetime.now()))
         facialRecognitionDetection2D_portOutDet.write(outputBottleFacialRecognitionDetection2D)
 
     # Sending processed image
     print("")
-    print("[INFO] Sending processed image at " + str(timeDetection) + " ...")
+    print("[INFO] Sending processed image at " + str(datetime.datetime.now()) + " ...")
     print("")
+
     out_buf_array[:,:] = in_buf_array
     facialRecognitionDetection2D_portOut.write(out_buf_image)
 
@@ -390,7 +388,6 @@ facialRecognitionDetection2D_portOutCoord.close()
 # Close files
 peopleFile.close()
 peopleDataFile.close()
-
 
 print("")
 print("")
