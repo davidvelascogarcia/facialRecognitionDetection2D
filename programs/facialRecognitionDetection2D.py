@@ -25,7 +25,8 @@ import numpy as np
 import time
 import yarp
 
-
+print("")
+print("")
 print("**************************************************************************")
 print("**************************************************************************")
 print("                 Program: Facial Recognition Detector 2D                  ")
@@ -42,7 +43,6 @@ print("")
 print("Loading facialRecognitionDetection2D module ...")
 print("")
 
-
 print("")
 print("**************************************************************************")
 print("YARP configuration:")
@@ -53,7 +53,6 @@ print("")
 
 # Init YARP Network
 yarp.Network.init()
-
 
 print("")
 print("[INFO] Opening image input port with name /facialRecognitionDetection2D/img:i ...")
@@ -112,7 +111,6 @@ out_buf_image = yarp.ImageRgb()
 out_buf_image.resize(image_w, image_h)
 out_buf_array = np.zeros((image_h, image_w, 3), np.uint8)
 out_buf_image.setExternal(out_buf_array.data, out_buf_array.shape[1], out_buf_array.shape[0])
-
 
 print("")
 print("[INFO] YARP network configured correctly.")
@@ -258,93 +256,110 @@ loopControlReceiveImageSource = 0
 # Loop process
 while int(loopControlReceiveImageSource) == 0:
 
-    print("")
-    print("**************************************************************************")
-    print("Waiting for input image source:")
-    print("**************************************************************************")
-    print("")
-    print("[INFO] Waiting input image source at " + str(datetime.datetime.now()) + " ...")
-    print("")
+    try:
+        print("")
+        print("**************************************************************************")
+        print("Waiting for input image source:")
+        print("**************************************************************************")
+        print("")
+        print("[INFO] Waiting input image source at " + str(datetime.datetime.now()) + " ...")
+        print("")
 
+        # Recieve image source
+        frame = facialRecognitionDetection2D_portIn.read()
 
-    # Recieve image source
-    frame = facialRecognitionDetection2D_portIn.read()
+        print("")
+        print("**************************************************************************")
+        print("Processing input image:")
+        print("**************************************************************************")
+        print("")
+        print("[INFO] Processing input image at " + str(datetime.datetime.now()) + " ...")
+        print("")
 
-    print("")
-    print("**************************************************************************")
-    print("Processing input image:")
-    print("**************************************************************************")
-    print("")
-    print("[INFO] Processing input image at " + str(datetime.datetime.now()) + " ...")
-    print("")
+        # Buffer processed image
+        in_buf_image.copy(frame)
+        assert in_buf_array.__array_interface__['data'][0] == in_buf_image.getRawImage().__int__()
 
-    # Buffer processed image
-    in_buf_image.copy(frame)
-    assert in_buf_array.__array_interface__['data'][0] == in_buf_image.getRawImage().__int__()
+        # YARP -> OpenCV
+        rgbFrame = in_buf_array[:, :, ::-1]
 
-    # YARP -> OpenCV
-    rgbFrame = in_buf_array[:, :, ::-1]
+        # Detect faces in rgbFrame
+        faceLocations = face_recognition.face_locations(rgbFrame)
 
-    # Detect faces in rgbFrame
-    faceLocations = face_recognition.face_locations(rgbFrame)
+        # Encode face detected
+        faceEncodings = face_recognition.face_encodings(rgbFrame, faceLocations)
 
-    # Encode face detected
-    faceEncodings = face_recognition.face_encodings(rgbFrame, faceLocations)
+        # Pre-configure detected name as "None"
+        detectedPerson = "None"
 
-    # Pre-configure detected name as "None"
-    detectedPerson = "None"
+        # If faces has been detected
+        if str(faceLocations) != "[]":
 
-    # If faces has been detected
-    if str(faceLocations) != "[]":
+            # Process image with faces detected
+            for (top, right, bottom, left), faceEncoding in zip(faceLocations, faceEncodings):
 
-        # Process image with faces detected
-        for (top, right, bottom, left), faceEncoding in zip(faceLocations, faceEncodings):
+                # Compare faceEncoding with known faces
+                faceMatches = face_recognition.compare_faces(knownFacesEnconding, faceEncoding)
 
-            # Compare faceEncoding with known faces
-            faceMatches = face_recognition.compare_faces(knownFacesEnconding, faceEncoding)
+                # Compare faceEncoding with known faces to get distance
+                faceMatchesDistance = face_recognition.face_distance(knownFacesEnconding, faceEncoding)
 
-            # Compare faceEncoding with known faces to get distance
-            faceMatchesDistance = face_recognition.face_distance(knownFacesEnconding, faceEncoding)
+                # Extract index match
+                bestMatchIndex = np.argmin(faceMatchesDistance)
 
-            # Extract index match
-            bestMatchIndex = np.argmin(faceMatchesDistance)
+                # If detected person is in database get name
+                if faceMatches[bestMatchIndex]:
+                   detectedPerson = knownFacesNames[bestMatchIndex]
 
-            # If detected person is in database get name
-            if faceMatches[bestMatchIndex]:
-               detectedPerson = knownFacesNames[bestMatchIndex]
+                # If isn´t in database is "Unknown"
+                else:
+                   detectedPerson = "Unknown"
 
-            # If isn´t in database is "Unknown"
-            else:
-               detectedPerson = "Unknown"
+                # Paint processed image
+                # Paint rectange in detected face
+                cv2.rectangle(in_buf_array, (left, top), (right, bottom), (0, 0, 255), 2)
 
-            # Paint processed image
-            # Paint rectange in detected face
-            cv2.rectangle(in_buf_array, (left, top), (right, bottom), (0, 0, 255), 2)
+                # Paint rectangle to put name
+                cv2.rectangle(in_buf_array, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
 
-            # Paint rectangle to put name
-            cv2.rectangle(in_buf_array, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
+                # Paint name
+                cv2.putText(in_buf_array, detectedPerson, (left + 6, bottom - 6), cv2.FONT_HERSHEY_DUPLEX, 1.0, (255, 255, 255), 1)
 
-            # Paint name
-            cv2.putText(in_buf_array, detectedPerson, (left + 6, bottom - 6), cv2.FONT_HERSHEY_DUPLEX, 1.0, (255, 255, 255), 1)
+                # Get people coordinates
+                x = left
+                y = 480 - bottom
 
-            # Get people coordinates
-            x = left
-            y = 480 - bottom
+                # Print processed data
+                print("")
+                print("**************************************************************************")
+                print("Resume results:")
+                print("**************************************************************************")
+                print("")
+                print("[RESULTS] facialRecognitionDetection2D results:")
+                print("")
+                print("[DETECTION] Facial recognition detection: " + str(detectedPerson))
+                print("[COORDINATES] Coordinates: X:" + str(x) + ", Y: " + str(y))
+                print("[DATE] Detection time: " + str(datetime.datetime.now()))
+                print("")
 
-            # Print processed data
-            print("")
-            print("**************************************************************************")
-            print("Resume results:")
-            print("**************************************************************************")
-            print("")
-            print("[RESULTS] facialRecognitionDetection2D results:")
-            print("")
-            print("[DETECTION] Facial recognition detection: " + str(detectedPerson))
-            print("[COORDINATES] Coordinates: X:" + str(x) + ", Y: " + str(y))
-            print("[DATE] Detection time: " + str(datetime.datetime.now()))
-            print("")
+                # Sending processed facialRecognitionDetection2D detection
+                outputBottleFacialRecognitionDetection2D.clear()
+                outputBottleFacialRecognitionDetection2D.addString("DETECTION:")
+                outputBottleFacialRecognitionDetection2D.addString(detectedPerson)
+                outputBottleFacialRecognitionDetection2D.addString("DATE:")
+                outputBottleFacialRecognitionDetection2D.addString(str(datetime.datetime.now()))
+                facialRecognitionDetection2D_portOutDet.write(outputBottleFacialRecognitionDetection2D)
 
-            # Sending processed facialRecognitionDetection2D detection
+                # Sending coordinates detection
+                coordinatesBottleFacialRecognitionDetection2D.clear()
+                coordinatesBottleFacialRecognitionDetection2D.addString("COORDINATES:")
+                coordinatesBottleFacialRecognitionDetection2D.addString("X: " + str(x) + ", Y: " + str(y))
+                coordinatesBottleFacialRecognitionDetection2D.addString("DATE:")
+                coordinatesBottleFacialRecognitionDetection2D.addString(str(datetime.datetime.now()))
+                facialRecognitionDetection2D_portOutCoord.write(coordinatesBottleFacialRecognitionDetection2D)
+
+        else:
+            # Sending processed detection if none detection
             outputBottleFacialRecognitionDetection2D.clear()
             outputBottleFacialRecognitionDetection2D.addString("DETECTION:")
             outputBottleFacialRecognitionDetection2D.addString(detectedPerson)
@@ -352,31 +367,18 @@ while int(loopControlReceiveImageSource) == 0:
             outputBottleFacialRecognitionDetection2D.addString(str(datetime.datetime.now()))
             facialRecognitionDetection2D_portOutDet.write(outputBottleFacialRecognitionDetection2D)
 
-            # Sending coordinates detection
-            coordinatesBottleFacialRecognitionDetection2D.clear()
-            coordinatesBottleFacialRecognitionDetection2D.addString("COORDINATES:")
-            coordinatesBottleFacialRecognitionDetection2D.addString("X: " + str(x) + ", Y: " + str(y))
-            coordinatesBottleFacialRecognitionDetection2D.addString("DATE:")
-            coordinatesBottleFacialRecognitionDetection2D.addString(str(datetime.datetime.now()))
-            facialRecognitionDetection2D_portOutCoord.write(coordinatesBottleFacialRecognitionDetection2D)
+        # Sending processed image
+        print("")
+        print("[INFO] Sending processed image at " + str(datetime.datetime.now()) + " ...")
+        print("")
 
-    else:
+        out_buf_array[:,:] = in_buf_array
+        facialRecognitionDetection2D_portOut.write(out_buf_image)
 
-        # Sending processed detection if none detection
-        outputBottleFacialRecognitionDetection2D.clear()
-        outputBottleFacialRecognitionDetection2D.addString("DETECTION:")
-        outputBottleFacialRecognitionDetection2D.addString(detectedPerson)
-        outputBottleFacialRecognitionDetection2D.addString("DATE:")
-        outputBottleFacialRecognitionDetection2D.addString(str(datetime.datetime.now()))
-        facialRecognitionDetection2D_portOutDet.write(outputBottleFacialRecognitionDetection2D)
-
-    # Sending processed image
-    print("")
-    print("[INFO] Sending processed image at " + str(datetime.datetime.now()) + " ...")
-    print("")
-
-    out_buf_array[:,:] = in_buf_array
-    facialRecognitionDetection2D_portOut.write(out_buf_image)
+    except:
+        print("")
+        print("[ERROR] Empty frame.")
+        print("")
 
 # Close ports
 print("[INFO[ Closing ports ...")
